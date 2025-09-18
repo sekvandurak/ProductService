@@ -2,10 +2,12 @@ using MediatR;
 using ProductService.Application.Interfaces;
 using ProductService.Application.Products.DTOs;
 using ProductService.Application.Queries;
+using ErrorOr;
+using System.Reflection;
 
 namespace ProductService.Application.Products.Queries;
 
-public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, ProductDto?>
+public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, ErrorOr<ProductDto?>>
 {
     private readonly IProductRepository _repository;
 
@@ -14,13 +16,23 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
         _repository = repository;
     }
 
-    public async Task<ProductDto?> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<ProductDto?>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (product == null)
-            return null;
+        {
+            return Error.NotFound(
+                code: "Product.Error",
+                description: $"Product with {request.Id} not found"
+            );
+        }
 
-        return new ProductDto(product.Id, product.Name, product.Price.Amount, product.Price.Currency);
+        return new ProductDto(
+                    product.Id,
+                    product.Name,
+                    product.Price.Amount,
+                    product.Price.Currency
+                    );
     }
 }

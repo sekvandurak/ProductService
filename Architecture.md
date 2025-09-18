@@ -15,10 +15,12 @@
 ## Architecture Style
 - **Clean Architecture + DDD** prensipleri.
 - Katmanlar:
-- **Api** (Presentation): Controller, Swagger, Global Error Handling (Middleware), Merkezi DI çağrısı
-- **Application**: CQRS + MediatR, DTO/Use-case/Handler, arayüzler (port)
+- **Api** (Presentation): Controller, Swagger, Global Error Handling (Middleware), Merkezi DI çağrısı, ortak error mapping
+- **Application**: CQRS + MediatR, DTO/Use-case/Handler, arayüzler (port), ErrorOr ile beklenen hata yönetimi
 - **Domain**: Entities, Value Objects, Aggregates, DomainException, BaseEntity/AggregateRoot
 - **Infrastructure**: EF Core + **PostgreSQL**, DbContext, Fluent Config, Migrations, Repository impl.
+
+
 
 ## Database
 - **PostgreSQL** kullanılacaktır.
@@ -29,6 +31,7 @@
 - Application katmanında **CQRS + MediatR**.
 - Komutlar: `.../Products/Commands`, Sorgular: `.../Products/Queries`.
 - Handler’lar Application içinde.
+- Dönen tipler ErrorOr<T> ile sarılır.
 
 ## Dependency Injection
 - Her katmanda `DependencyInjection.cs`:
@@ -41,19 +44,21 @@ builder.Services.AddApplication()
 
 
 
-Global Error Handling
+Error Handling
+1. Middleware (Api Katmanı)
 
-Middleware ile tek noktadan hata yakalama.
+Tek noktadan runtime (Unhandled) error yakalama.
 
-DomainException → 400, diğer beklenmeyenler → 500.
+DomainException dışındaki beklenmeyenler → 500.
 
 Dosya: ProductService.Api/Middleware/ErrorHandlingMiddleware.cs
 
-Test
+2. ErrorOr (Application & Api Katmanları)
 
-xUnit (unit + integration), Moq (mock).
+Beklenen hatalar için (NotFound, Validation, Unauthorized) ErrorOr<T> kullanılır.
 
-Unit: Domain & Application, Integration: Api + Infrastructure.
+Mapping → ProductService.Api/Common/Errors/ErrorMapping.cs
+
 
 Kurallar
 
@@ -66,6 +71,8 @@ Infrastructure, Application arayüzlerini uygular.
 Api sadece Application/Infrastructure servislerini DI ile kullanır.
 
 
+Mimari 
+
 src/
  ├── ProductService.sln
  │
@@ -74,11 +81,14 @@ src/
  │    │    └── ProductsController.cs
  │    ├── Middleware/
  │    │    └── ErrorHandlingMiddleware.cs
+ │    ├── Common/
+ │    │    └── Errors/
+ │    │         └── ErrorMapping.cs
  │    ├── Program.cs
  │    ├── appsettings.json
  │    └── appsettings.Development.json
  │
- ├── ProductService.Application/         # Application Layer (CQRS, MediatR)
+ ├── ProductService.Application/         # Application Layer (CQRS, MediatR, ErrorOr)
  │    ├── Interfaces/
  │    │    └── IProductRepository.cs
  │    ├── Products/
@@ -124,3 +134,5 @@ src/
       │    └── ProductTests.cs
       └── IntegrationTests/
            └── ProductApiTests.cs
+
+

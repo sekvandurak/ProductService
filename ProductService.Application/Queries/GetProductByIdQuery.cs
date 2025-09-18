@@ -1,6 +1,7 @@
+using ErrorOr;
 using MediatR;
 using ProductService.Application.Products.DTOs;
 
 namespace ProductService.Application.Queries;
 
-public record GetProductByIdQuery(Guid Id) : IRequest<ProductDto?>;
+public record GetProductByIdQuery(Guid Id) : IRequest<ErrorOr<ProductDto?>>;
