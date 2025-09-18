@@ -46,8 +46,6 @@ TestResult*/
 packages/
 .nuget/
 
-# EF Core migrations snapshots (optional, keep if you need versioning)
-*_Snapshot.cs
 
 # Others
 launchSettings.json
