@@ -1,0 +1,53 @@
+
+---
+
+# 📄 `.gitignore`
+
+Bunu da proje köküne koy:
+
+```gitignore
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+.history/
+*.code-workspace
+
+# Rider / JetBrains
+.idea/
+
+# Visual Studio
+.vs/
+
+# Mac / Linux system files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test results
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# Packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# EF Core migrations snapshots (optional, keep if you need versioning)
+*_Snapshot.cs
+
+# Others
+launchSettings.json
