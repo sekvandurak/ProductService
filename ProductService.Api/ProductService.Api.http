@@ -1,0 +1,16 @@
+### Yeni ürün oluştur
+POST http://localhost:5108/api/products
+Content-Type: application/json
+
+{
+  "name": "Laptop",
+  "amount": 2500,
+  "currency": "USD"
+}
+
+###
+
+### Var olan ürünü getir (ID’yi POST sonrası dönen Guid ile değiştir)
+GET http://localhost:5108/api/products/d460f9ec-7a76-4ee5-bddf-0566eea626b8
+
+

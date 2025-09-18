@@ -1,26 +1,27 @@
 using MediatR;
 using ProductService.Application.Interfaces;
-using ProductService.Application.Products.Commands;
+using ProductService.Domain.Products.Entities;
 using ProductService.Domain.Products.ValueObjects;
 
-namespace ProductService.Application.Commands;
+namespace ProductService.Application.Products.Commands;
 
 public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IProductRepository _repository;
 
-    public CreateProductHandler(IProductRepository productRepository)
+    public CreateProductHandler(IProductRepository repository)
     {
-        _productRepository = productRepository;
+        _repository = repository;
     }
 
     public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
         var money = new Money(request.Amount, request.Currency);
-        var product = new Domain.Products.Entities.Product(request.Name, money);
+        var product = new Product(request.Name, money);
 
-        await _productRepository.AddAsync(product, cancellationToken);
-        await _productRepository.SaveChangesAsync(cancellationToken);
+        await _repository.AddAsync(product, cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
+
         return product.Id;
     }
 }
