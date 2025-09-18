@@ -4,14 +4,14 @@ Content-Type: application/json
 
 {
   "name": "Laptop",
-  "amount": 2500,
+  "amount": 1,
   "currency": "USD"
 }
 
 ###
 
 ### Var olan ürünü getir (ID’yi POST sonrası dönen Guid ile değiştir)
-GET http://localhost:5108/api/products/d460f9ec-7a76-4ee5-bddf-0566eea626b7
+GET http://localhost:5108/api/products/3871cedc-42e8-49d8-a696-1876283e7c35
 
 ###
 GET http://localhost:5108/api/products/boom
@@ -24,3 +24,23 @@ Content-Type: application/json
   "amount": -5,
   "currency": "USD"
 }
+
+###
+###
+GET http://localhost:5108/api/products
+
+
+##
+### Var olan ürünü güncelle (ID’yi değiştirmeyi unutma)
+PUT http://localhost:5108/api/products/d460f9ec-7a76-4ee5-bddf-0566eea626b8
+Content-Type: application/json
+
+{
+  "id": "d460f9ec-7a76-4ee5-bddf-0566eea626b8",
+  "name": "Updated Laptop",
+  "amount": 3,
+  "currency": "EUR"
+}
+
+### Ürün sil
+DELETE http://localhost:5108/api/products/687a912e-538b-45e3-bb4a-5c84c23fb793

@@ -20,21 +20,22 @@ public class ProductsController : ControllerBase
         _mediator = mediator;
     }
 
-    // POST: api/products
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
+    // get all products
+    // Match comes from ErrorOr library
+    [HttpGet]
+    public async Task<IActionResult> GetAllProducts()
     {
-        var result = await _mediator.Send(command);
+        var query = new GetAllProductsQuery();
+        var result = await _mediator.Send(query);
 
         return result.Match(
-            id => CreatedAtAction(nameof(GetById), new { id }, id),
+            products => Ok(products),
             errors => Problem(
                 detail: string.Join(", ", errors.Select(e => e.Description)),
-                 statusCode: ErrorMapping.ToStatusCode(errors.First().Type)
+                statusCode: ErrorMapping.ToStatusCode(errors.First().Type)
             )
         );
     }
-
 
     // GET: api/products/{id}
     [HttpGet("{id}")]
@@ -51,6 +52,58 @@ public class ProductsController : ControllerBase
             )
         );
     }
+
+    // POST: api/products
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        return result.Match(
+            id => CreatedAtAction(nameof(GetById), new { id }, id),
+            errors => Problem(
+                detail: string.Join(", ", errors.Select(e => e.Description)),
+                 statusCode: ErrorMapping.ToStatusCode(errors.First().Type)
+            )
+        );
+    }
+
+    // update
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest("Route id and body id must match");
+        }
+
+        var result = await _mediator.Send(command);
+
+        return result.Match<IActionResult>(
+        _ => NoContent(),
+        errors => Problem(
+            detail: string.Join(", ", errors.Select(e => e.Description)),
+            statusCode: ErrorMapping.ToStatusCode(errors.First().Type)
+        )
+    );
+    }
+
+    [HttpDelete("{id}")]
+public async Task<IActionResult> Delete(Guid id)
+{
+    var command = new DeleteProductCommand(id);
+    var result = await _mediator.Send(command);
+
+    return result.Match(
+        deletedId => Ok(new { message = $"Product {deletedId} deleted successfully." }),
+        errors => Problem(
+            detail: string.Join(", ", errors.Select(e => e.Description)),
+            statusCode: ErrorMapping.ToStatusCode(errors.First().Type)
+        )
+    );
+}
+
+
 
     [HttpGet("boom")]
     public IActionResult Boom()

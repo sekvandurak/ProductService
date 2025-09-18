@@ -5,17 +5,16 @@ namespace ProductService.Domain.Products.ValueObjects;
 public class Money : ValueObject
 {
     public decimal Amount { get; private set; }
-    public string Currency { get; private set; } = "USD"; // default
+    public string Currency { get; private set; } = "USD";
 
     private Money() { } // EF Core için
+    //neden ef coere için: ef core reflection ile nesne oluşturuyor, parametresiz constructor lazım
 
     public Money(decimal amount, string currency = "USD")
     {
-        if (amount < 0)
-            throw new ArgumentException("Amount cannot be negative.");
-
+        // Artık exception yok, Application katmanı validasyonu yapacak
         Amount = amount;
-        Currency = currency;
+        Currency = string.IsNullOrWhiteSpace(currency) ? "USD" : currency;
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

@@ -14,7 +14,6 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
     {
         _repository = repository;
     }
-
     public async Task<ErrorOr<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
 
@@ -26,7 +25,6 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 description: "Amount must be bigger than zero"
             );
         }
-
         var money = new Money(request.Amount, request.Currency);
         var product = new Product(request.Name, money);
 

@@ -1,33 +1,36 @@
 using ProductService.Application;
 using ProductService.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using ProductService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// DI
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 
-// Swagger / OpenAPI
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- otomatik migrate ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
+    db.Database.Migrate();
+}
+// -------------------------
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ProductService.Api.Middleware.ErrorHandlingMiddleware>();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-// 🔹 Bu satır eksikti!
+// app.UseHttpsRedirection(); // container'da kapalı tutmak mantıklı
 app.MapControllers();
 
 app.Run();

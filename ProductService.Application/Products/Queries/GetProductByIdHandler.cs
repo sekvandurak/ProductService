@@ -4,6 +4,8 @@ using ProductService.Application.Products.DTOs;
 using ProductService.Application.Queries;
 using ErrorOr;
 using System.Reflection;
+using MapsterMapper;
+using Mapster;
 
 namespace ProductService.Application.Products.Queries;
 
@@ -14,6 +16,7 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, ErrorO
     public GetProductByIdHandler(IProductRepository repository)
     {
         _repository = repository;
+        
     }
 
     public async Task<ErrorOr<ProductDto?>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
@@ -28,11 +31,16 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, ErrorO
             );
         }
 
+        var dto = product.Adapt<ProductDto>();
+        return dto;
+        /*
         return new ProductDto(
                     product.Id,
                     product.Name,
                     product.Price.Amount,
                     product.Price.Currency
                     );
+
+        */
     }
 }

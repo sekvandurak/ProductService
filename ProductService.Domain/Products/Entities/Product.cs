@@ -23,4 +23,15 @@ public class Product : AggregateRoot
     {
         Price = newPrice ?? throw new ArgumentNullException(nameof(newPrice));
     }
+
+    public void Update(string name, Money price)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Product name cannot be empty.");
+
+        Name = name;
+        Price = price ?? throw new ArgumentNullException(nameof(price));
+    }
+
+
 }

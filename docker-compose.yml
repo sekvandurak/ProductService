@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  productservice-api:
+    build:
+      context: .
+      dockerfile: ProductService.Api/Dockerfile
+    ports:
+      - "5108:8080"   # container içindeki 8080 portunu dışarıda 5108'e bağla
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=ProductDb;Username=postgres;Password=sekvan
